@@ -1,35 +1,53 @@
 # -*- coding: utf-8 -*-
 #!/bin/python3
 # author: bryan kanu
-import hashlib, sys, traceback
+from datetime import datetime, date, time, timezone
 from pathlib import Path
 
+import argparse, hashlib, traceback
+
 ALGORITHM = "sha256"
-ACTUAL_COUNT = 0; TOTAL_COUNT = 0
-getFiles = lambda paths : list(filter((lambda path: path.is_file()),paths))
+HASHIFIED_HASHES_FNAME = ""
+TOTAL_PATHS_FOUND = 0
+TOTAL_PATHS_HASHIFIED = 0
+
+get_files = lambda paths : list(filter((lambda path: path.is_file()),paths))
+get_timestamp = lambda : datetime.now(timezone.utc).strftime('%m-%d-%y.%H-%M-%S')
 
 def hashify(path):
-    global ACTUAL_COUNT
+    global TOTAL_PATHS_HASHIFIED
     try:
-        with open("hashes.tmp.txt","a") as fd:
+        with open(HASHIFIED_HASHES_FNAME,"a") as fd:
             m_hash = hashlib.sha256(); m_hash.update(path.read_bytes())
-            fd.write(f"[*] file: {path.absolute()} ({m_hash.hexdigest()})\n")
-            ACTUAL_COUNT += 1
+            fd.write(f"{path.absolute()} {m_hash.hexdigest()}\n")
+            TOTAL_PATHS_HASHIFIED += 1
     except:
         print(f"[x] {traceback.format_exc()}")
 
-def main(argv):
-    global TOTAL_COUNT
+def main():
+    global HASHIFIED_HASHES_FNAME
+    paths = []
     try:
-        root = Path(f"{sys.argv[1]}"); paths = getFiles(list(root.rglob("**/*")))
-        TOTAL_COUNT = len(paths); list(map(hashify,paths))
+        root = Path(f"{argv.directory}")
+        HASHIFIED_HASHES_FNAME = f"{argv.directory}.hashes.{get_timestamp()}.txt"
+        paths = get_files(list(root.rglob("**/*")))
+        list(map(hashify,paths))
     except:
         print(f"[x] {traceback.format_exc()}")
+    return len(paths)
+
+parser = argparse.ArgumentParser(prog=f"hashify", 
+    description="Program to help verify the integrity of files")
+parser.add_argument("-d", "--dir", dest="directory", metavar="DIRECTORY",
+    required=True, type=Path, help="Root directory to start recursive hashing")
+argv = parser.parse_args()
 
 if __name__ == "__main__":
     try:
-        print("[*] Running.")
-        main(sys.argv)
-        print(f"[*] Finished. Found {TOTAL_COUNT} files. Hashed {ACTUAL_COUNT} files using {ALGORITHM}.")
+        print(f"[*] Algorithm: {ALGORITHM}")
+        TOTAL_PATHS_FOUND = main()
+        print(f"[*] Found {TOTAL_PATHS_FOUND} files")
+        print(f"[*] Hashed {TOTAL_PATHS_HASHIFIED} files")
+        print(f"[*] Output written to: {HASHIFIED_HASHES_FNAME}")
     except:
         print(f"[x] {traceback.format_exc()}")
