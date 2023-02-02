@@ -1,0 +1,16 @@
+[1: settingPrivateVariables.cxx]
+[2: settingPrivateVariablesEx2.cxx]
+
+[1->2 line 1]: #include <map>
+[1->2 line 6]: public:
+[1->2 line 10]:        flagToSet = (flagToSet == true) ? false : true;
+[1->2 line 15]:         return m.find(val)->second;
+[1->2 line 18]: private: 
+[1->2 line 19]:     map<string, bool> m = {{"a", true}, {"b", true}, {"c", false}};
+[1->2 line 20]:     map<string, bool>::iterator mit;
+[1->2 line 27]:     cout << "GetVal c: " << sp->getVal("c") << "\n";
+[1->2 line 29]:     cout << "c after set flag: " << sp->getVal("c") << "\n";
+[1->2 line 30]:     cout << "GetVal a: " << sp->getVal("a") << "\n";
+[1->2 line 31]:     sp->SetIndividualFlag( sp->getVal("a"));
+[1->2 line 32]:     cout << "a after set flag: " << sp->getVal("a") << "\n";
+[1->2 line 33]:     cout << "checking for flag that doesnt exist: " << sp->getVal("f") << "\n";

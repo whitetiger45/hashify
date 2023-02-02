@@ -1,0 +1,23 @@
+[1: settingPrivateVariables.cxx]
+[2: settingPrivateVariablesEx2.cxx]
+
+[2->1 line 5]:     public:
+[2->1 line 9]:         flagToSet = (flagToSet == true) ? false : true;
+[2->1 line 14]:         enum {eb, ec};
+[2->1 line 15]:         int get = (val == "b") ? eb : ec;
+[2->1 line 16]:         switch(get)
+[2->1 line 17]:         {
+[2->1 line 18]:             case eb:
+[2->1 line 19]:                 return b;
+[2->1 line 20]:             case ec:
+[2->1 line 21]:                 return c;
+[2->1 line 22]:         }
+[2->1 line 23]:         return c;
+[2->1 line 26]:     private: 
+[2->1 line 27]:     bool b = false;
+[2->1 line 28]:     bool c = true;
+[2->1 line 35]:     cout << "GetVal c: " << sp->getVal("c") << "\nGetVal b: " << sp->getVal("b") << "\n";
+[2->1 line 37]:     cout << "c after flag set 1: " << sp->getVal("c") << "\n";
+[2->1 line 39]:     cout << "c after flag set 2: " << sp->getVal("c") << "\n";
+[2->1 line 40]:     sp->SetIndividualFlag( sp->getVal("b"));
+[2->1 line 41]:     cout << "b after flag set 1: " << sp->getVal("b") << "\n";

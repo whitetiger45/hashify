@@ -1,0 +1,12 @@
+hashify Change Tracker:
+-------------------------
+Release: v1.0
+Date: 2023.1.2
+
+### Changes
+Date: 2023.1.2
+    - hashify.py
+        - add ascii_walker function to diff files that you notice have different hashes when they shouldn't
+        - add CHANGES.log
+        - update argsparse with subparsers
+        - add tests dir for managing regressions in future when changes made to src
