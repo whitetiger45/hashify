@@ -1,0 +1,9 @@
+[1: main.0.c]
+[2: main.1.c]
+
+[2->1 line 22]:         "Git-Hash:   " DBFI_GIT_HASH "\n"
+[2->1 line 23]:         "Build-Type: " DBFI_BUILD_TYPE "\n"
+[2->1 line 30]:     
+[2->1 line 31]:     for (arg = argv + 1; arg != argv + argc; ++argv)
+[2->1 line 39]:         
+[2->1 line 40]:         if ((!strcmp(*arg, "--version")) || (!strcmp(*arg, "-v")))

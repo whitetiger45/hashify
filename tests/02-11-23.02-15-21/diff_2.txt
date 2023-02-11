@@ -1,0 +1,5 @@
+[1: container.0.hxx]
+[2: container.1.hxx]
+
+[2->1 line 175]:       static auto check(int, typename T::dependencies = {}) noexcept -> typename T::dependencies;
+[2->1 line 178]:       using type = decltype(check(42));
