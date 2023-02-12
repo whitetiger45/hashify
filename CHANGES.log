@@ -1,5 +1,15 @@
 hashify Change Tracker:
 -------------------------
+Release: v2.0.1
+Date: 2023.12.2
+
+### Changes
+Date: 2023.1.2
+    - hashify.py
+        - fix bug after major revisions
+            - add test cases showing why revision was needed
+
+-------------------------
 Release: v1.0
 Date: 2023.1.2
 

@@ -1,0 +1,113 @@
+[1: main.1.c]
+[2: main.2.c]
+
+[2->1 line 19]: #include "config.h"
+[2->1 line 20]: #include "lexer.h"
+[2->1 line 21]: #include "parser.h"
+[2->1 line 22]: #include "backend.h"
+[2->1 line 24]: #include <stdio.h>
+[2->1 line 25]: #include <stdlib.h>
+[2->1 line 26]: #include <string.h>
+[2->1 line 27]: #include <assert.h>
+[2->1 line 28]: #include <limits.h>
+[2->1 line 30]: void dbfi_help(char * app)
+[2->1 line 33]:         "Usage: %s {options} [filename]\n\n"
+[2->1 line 34]:         "Available options:\n"
+[2->1 line 35]:         "  --help,-?               - Show this help message\n"
+[2->1 line 36]:         "  --version,-v            - Show version information\n"
+[2->1 line 38]:         "  --compile,-c            - Compile to native program instead of interpreting\n"
+[2->1 line 39]:         "  --output,-o  [filename] - Alternative output filename for --compile\n"
+[2->1 line 41]:     , app);
+[2->1 line 44]: void dbfi_version(void)
+[2->1 line 46]:     printf(
+[2->1 line 47]:         "Dragon BrainFuck Interpreter (dbfi) Version " DBFI_VERSION "\n"
+[2->1 line 48]:         "Copyright (C) 2013, Felix Bytow <felix.bytow@googlemail.com>\n\n"
+[2->1 line 49]:         "Git-Hash:         " DBFI_GIT_HASH "\n"
+[2->1 line 50]:         "Build-Type:       " DBFI_BUILD_TYPE " - %d Bit \n"
+[2->1 line 51]:         "Compiled with:    " DBFI_COMPILED_WITH "\n"
+[2->1 line 53]:         "Builtin-Compiler: Yes (" DBFI_LIBTCC ")\n"
+[2->1 line 55]:         "Builtin-Compiler: No\n"
+[2->1 line 56]: #endif
+[2->1 line 57]:         , (int)(sizeof(void*) * CHAR_BIT)
+[2->1 line 58]:     );
+[2->1 line 61]: char const * dbfi_next_arg(char *** current_arg, char ** end)
+[2->1 line 63]:     if (*current_arg + 1 == end)
+[2->1 line 65]:         fprintf(stderr, "Error: \"--output,-o\" requires a filename as a parameter.\n");
+[2->1 line 66]:         exit(1);
+[2->1 line 69]:     ++(*current_arg);
+[2->1 line 70]:     return (**current_arg);
+[2->1 line 73]: int dbfi_main(char * filename, int compile, char * output)
+[2->1 line 75]:     dbfi_lexer_t lexer = dbfi_lexer_init(filename);
+[2->1 line 76]:     dbfi_parser_t parser = dbfi_parser_init();
+[2->1 line 77]:     dbfi_backend_t backend = dbfi_backend_init(compile ? DBFI_BACKEND_COMPILER : DBFI_BACKEND_INTERPRETER);
+[2->1 line 78]:     dbfi_parser_tree_t pt;
+[2->1 line 80]:     assert(lexer);
+[2->1 line 81]:     assert(parser);
+[2->1 line 82]:     assert(backend);
+[2->1 line 84]:     if (*output == '\0')
+[2->1 line 86]:         strcpy(output, filename);
+[2->1 line 87]:         strncat(output, ".bin", 1024);
+[2->1 line 88]:         output[1023] = '\0';
+[2->1 line 91]:     pt = dbfi_parser_generate_tree(parser, lexer);
+[2->1 line 93]:     dbfi_parser_release(parser);
+[2->1 line 94]:     dbfi_lexer_release(lexer);
+[2->1 line 96]:     assert(pt);
+[2->1 line 98]:     dbfi_backend_process_parser_tree(backend, pt);
+[2->1 line 100]:     dbfi_backend_finalize(backend, output);
+[2->1 line 101]:     dbfi_backend_release(backend);
+[2->1 line 103]:     dbfi_parser_tree_release(pt);
+[2->1 line 105]:     return 0;
+[2->1 line 108]: int main(int argc, char ** argv)
+[2->1 line 109]: {
+[2->1 line 110]:     char ** arg;
+[2->1 line 111]:     int compile = 0;
+[2->1 line 112]: #if defined(__linux__)
+[2->1 line 113]:     /* on Linux we default to stdin if no filename is given */
+[2->1 line 114]:     char filename[1024] = "/dev/stdin";
+[2->1 line 115]: #else
+[2->1 line 116]:     /* on Windows the filename is mandatory */
+[2->1 line 117]:     char filename[1024] = "";
+[2->1 line 118]: #endif /* __linux__ */
+[2->1 line 119]:     char output[1024] = "";
+[2->1 line 121]:     for (arg = argv + 1; arg != argv + argc; ++arg)
+[2->1 line 123]:         /* show help message */
+[2->1 line 124]:         if ((!strcmp(*arg, "--help")) || (!strcmp(*arg, "-?")))
+[2->1 line 126]:             dbfi_help(argv[0]);
+[2->1 line 127]:             return 0;
+[2->1 line 130]:         /* show version information */
+[2->1 line 131]:         else if ((!strcmp(*arg, "--version")) || (!strcmp(*arg, "-v")))
+[2->1 line 133]:             dbfi_version();
+[2->1 line 134]:             return 0;
+[2->1 line 137]: #if defined(LIBTCC_FOUND)
+[2->1 line 138]:         /* switch to compiler mode */
+[2->1 line 139]:         else if ((!strcmp(*arg, "--compile")) || (!strcmp(*arg, "-c")))
+[2->1 line 141]:             compile = 1;
+[2->1 line 144]:         /* set output filename for compiler mode */
+[2->1 line 145]:         else if ((!strcmp(*arg, "--output")) || (!strcmp(*arg, "-o")))
+[2->1 line 146]:         {
+[2->1 line 147]:             strncpy(output, dbfi_next_arg(&arg, argv + argc), sizeof(output));
+[2->1 line 148]:         }
+[2->1 line 149]: #endif /* LIBTCC_FOUND */
+[2->1 line 151]:         /* other things starting with '-' are invalid options */
+[2->1 line 152]:         else if ((*arg)[0] == '-')
+[2->1 line 153]:         {
+[2->1 line 154]:             fprintf(stderr, "Error: Unknown command line option. See --help for available options.\n");
+[2->1 line 155]:             return 1;
+[2->1 line 156]:         }
+[2->1 line 157]: 
+[2->1 line 158]:         /* the source filename */
+[2->1 line 159]:         else
+[2->1 line 160]:         {
+[2->1 line 161]:             strncpy(filename, *arg, sizeof(filename));
+[2->1 line 162]:         }
+[2->1 line 163]:     }
+[2->1 line 164]: 
+[2->1 line 165]:     if (filename[0] == '\0')
+[2->1 line 166]:     {
+[2->1 line 167]:         fprintf(stderr, "Error: No filename of a brainfuck script has been given.\n");
+[2->1 line 168]:         return 1;
+[2->1 line 169]:     }
+[2->1 line 170]: 
+[2->1 line 171]:     return dbfi_main(filename, compile, output);
+[2->1 line 172]: }
+[2->1 line 173]: 
